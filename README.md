@@ -251,7 +251,7 @@ npm start
 
 You can access the block explorer on the IP of your server on port 3001.
 
-E.G. http://198.51.100.1:3001
+E.G. http://127.0.0.1:3001
 
 ### License
 
