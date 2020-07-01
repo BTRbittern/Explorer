@@ -9,120 +9,249 @@ An open source block explorer written in node.js.
 *  mongodb 4.2.x
 *  *coind
 
-### Create database
+Use the following tutorial to setup a block explorer.
 
-Enter MongoDB cli:
+Make sure that you have the following requirement.
 
-    $ mongo
+- A server or VPS with Ubuntu Server 18.04 installed
 
-Create databse:
+Update your Ubuntu machine.
 
-    > use explorerdb
+sudo apt-get update
+sudo apt-get upgrade
 
-Create user with read/write access:
+Install the required dependencies.
 
-    > db.createUser( { user: "iquidus", pwd: "3xp!0reR", roles: [ "readWrite" ] } )
+sudo apt-get install build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-test-dev libboost-thread-dev libboost-all-dev libboost-program-options-dev
+sudo apt-get install libminiupnpc-dev libzmq3-dev libprotobuf-dev protobuf-compiler unzip software-properties-common libkrb5-dev mongodb nodejs npm git nano screen
 
-*Note: If you're using mongo shell 4.2.x, use the following to create your user:
+Install Berkeley DB.
 
-    > db.addUser( { user: "username", pwd: "password", roles: [ "readWrite"] })
+sudo add-apt-repository ppa:bitcoin/bitcoin
+sudo apt-get update
+sudo apt-get install libdb4.8-dev libdb4.8++-dev
 
-### Get the source
+Go to your home directory.
 
-    git clone https://github.com/iquidus/explorer explorer
+cd $HOME
 
-### Install node modules
+Download the daemon and tools from Bittern. 
 
-    cd explorer && npm install --production
+wget "https://github.com/BTRbittern/BITTERN" -O bittern-daemon-linux.tar.gz
+wget "https://github.com/BTRbittern/BITTERN" -O bittern-qt-linux.tar.gz
 
-### Configure
+Extract the tar files.
 
-    cp ./settings.json.template ./settings.json
+tar -xzvf bittern-daemon-linux.tar.gz
+tar -xzvf bitternn-qt-linux.tar.gz
 
-*Make required changes in settings.json*
+Install the daemon and tools.
 
-### Start Explorer
+sudo mv bitternd bittern-cli bittern-tx /usr/bin/
 
-    npm start
+Create the config file.
 
-*Note: mongod must be running to start the explorer*
+mkdir $HOME/.bittern
+nano $HOME/.bittern/bittern.conf
 
-As of version 1.4.0 the explorer defaults to cluster mode, forking an instance of its process to each cpu core. This results in increased performance and stability. Load balancing gets automatically taken care of and any instances that for some reason die, will be restarted automatically. For testing/development (or if you just wish to) a single instance can be launched with
+Paste the following lines in bittern.conf.
 
-    node --stack-size=10000 bin/instance
+rpcuser=rpc_bittern
+rpcpassword=CNsahKWiZpMzFxdvb9R7vKuAvYWRXqr24EfCkdjz
+rpcallowip=127.0.0.1
+listen=1
+server=1
+txindex=1
+daemon=1
 
-To stop the cluster you can use
+Start your daemon with the following command.
 
-    npm stop
+bitternd
 
-### Syncing databases with the blockchain
+Open mongodb.
 
-sync.js (located in scripts/) is used for updating the local databases. This script must be called from the explorers root directory.
+mongo
 
-    Usage: node scripts/sync.js [database] [mode]
+Create the database “explorerdb”.
 
-    database: (required)
-    index [mode] Main index: coin info/stats, transactions & addresses
-    market       Market data: summaries, orderbooks, trade history & chartdata
+use explorerdb
 
-    mode: (required for index database only)
-    update       Updates index from last sync to current block
-    check        checks index for (and adds) any missing transactions/addresses
-    reindex      Clears index then resyncs from genesis to current block
+Note: replace the value “414uq3EhKDNX76f7DZIMszvHrDMytCnzFevRgtAv” with a unique password.
+Create the database user.
 
-    notes:
-    * 'current block' is the latest created block when script is executed.
-    * The market database only supports (& defaults to) reindex mode.
-    * If check mode finds missing data(ignoring new data since last sync),
-      index_timeout in settings.json is set too low.
+db.createUser( { user: "iquidus", pwd: "414uq3EhKDNX76f7DZIMszvHrDMytCnzFevRgtAv", roles: [ "readWrite" ] } )
+
+Close mongodb.
+
+exit
+
+Go to your home directory.
+
+cd $HOME
+
+Download iquidus explorer.
+
+git clone https://github.com/BTRbittern/Explorer explorer
+
+Install iquidus explorer.
+
+cd explorer && npm install --production
+
+Create the settings file.
+
+cp ./settings.json.template ./settings.json
+
+Open the settings file.
+
+nano settings.json
+
+Change the marked values.
+
+title - Change the value “BTR - Bittern” with the name of your coin.
+
+address - Change the value “127.0.0.1” with the IP address of your server.
+
+coin - Change the value “Bittern” with the name of your coin.
+
+symbol - Change the value “BTR” with the abbreviation of your coin.
+
+password - Change the value “3xp!0reR” with the mongodb password.
+
+user - Change the value “bitternrpc” with the RPC username of your coin.
+
+pass - Change the value “123gfjk3R3pCCVjHtbRde2s5kzdf233sa” with the RPC password of your coin.
+
+confirmations - Change the value “40” with the transaction confirmations of your coin.
+
+api - Change the value “true” to “false”.
+
+markets - Change the value “true” to “false”.
+
+twitter - Change the value “true” to “false”.
 
 
-*It is recommended to have this script launched via a cronjob at 1+ min intervals.*
+Original settings.json.
 
-**crontab**
 
-*Example crontab; update index every minute and market data every 2 minutes*
+/*
+  This file must be valid JSON. But comments are allowed
 
-    */1 * * * * cd /path/to/explorer && /usr/bin/nodejs scripts/sync.js index update > /dev/null 2>&1
-    */2 * * * * cd /path/to/explorer && /usr/bin/nodejs scripts/sync.js market > /dev/null 2>&1
-    */5 * * * * cd /path/to/explorer && /usr/bin/nodejs scripts/peers.js > /dev/null 2>&1
+  Please edit settings.json, not settings.json.template
+*/
+{
+  // name your instance!
+  "title": "BTR - Bittern",
 
-### Wallet
+  "address": "127.0.0.1:3001",
 
-Iquidus Explorer is intended to be generic, so it can be used with any wallet following the usual standards. The wallet must be running with atleast the following flags
+  // coin name
+  "coin": "Bittern",
 
-    -daemon -txindex
-    
-### Security
+  // coin symbol
+  "symbol": "BTR",
 
-Ensure mongodb is not exposed to the outside world via your mongo config or a firewall to prevent outside tampering of the indexed chain data. 
+...
 
-### Known Issues
+  // database settings (MongoDB)
+  "dbsettings": {
+    "user": "iquidus",
+    "password": "3xp!0reR",
+    "database": "explorerdb",
+    "address": "localhost",
+    "port": 27017
+  },
 
-**script is already running.**
+  //update script settings
+  "update_timeout": 10,
+  "check_timeout": 250,
 
-If you receive this message when launching the sync script either a) a sync is currently in progress, or b) a previous sync was killed before it completed. If you are certian a sync is not in progress remove the index.pid and db_index.pid from the tmp folder in the explorer root directory.
+  // wallet settings
+  "wallet": {
+    "host": "localhost",
+    "port": 9332,
+    "user": "bitternrpc",
+    "pass": "123gfjk3R3pCCVjHtbRde2s5kzdf233sa"
+  },
 
-    rm tmp/index.pid
-    rm tmp/db_index.pid
+  // confirmations
+  "confirmations": 40,
 
-**exceeding stack size**
+  // language settings
+  "locale": "locale/en.json",
 
-    RangeError: Maximum call stack size exceeded
+  // menu settings
+  "display": {
+    "api": true,
+    "markets": true,
+    "richlist": true,
+    "twitter": true,
+    "facebook": false,
+    "googleplus": false,
+    "youtube": false,
+    "search": true,
+    "movement": true,
+    "network": true
+  },
 
-Nodes default stack size may be too small to index addresses with many tx's. If you experience the above error while running sync.js the stack size needs to be increased.
+Save the settings file.
 
-To determine the default setting run
 
-    node --v8-options | grep -B0 -A1 stack_size
+----------optional----------
 
-To run sync.js with a larger stack size launch with
+Replace the default logo with your own logo.
 
-    node --stack-size=[SIZE] scripts/sync.js index update
+Note: The file must be a PNG file with a width and height of 128 px.
 
-Where [SIZE] is an integer higher than the default.
+Overwrite the file “logo.png” inside the path “explorer/public/images/”.
 
-*note: SIZE will depend on which blockchain you are using, you may need to play around a bit to find an optimal setting*
+
+Replace the default favicon with your own favicon.
+
+Note 1: The file must be an ICO file with a width and height of 16 px.
+Note 2: You can convert your PNG file to an ICO file on Online ICO converter.
+
+Overwrite the file “favicon.ico” inside the path “explorer/public/”.
+
+----------optional----------
+
+
+Get the path to your block explorer.
+
+cd $HOME/explorer
+pwd
+
+Example output
+
+/root/explorer
+
+Open crontab
+
+crontab -e
+
+Change the path “/root/explorer” with the path to your block explorer.
+
+Paste the following lines to the bottom of the crontab.
+
+*/1 * * * * cd /root/explorer && /usr/bin/nodejs scripts/sync.js index update > /dev/null 2>&1
+*/5 * * * * cd /root/explorer && /usr/bin/nodejs scripts/peers.js > /dev/null 2>&1
+
+Save the crontab.
+
+A screen session will remain open when the SSH connection is disconnected.
+You can disconnect from a screen session using the keyboard combination ctrl + a + d.
+
+Start a screen session.
+
+screen
+
+Start your block explorer.
+
+cd $HOME/explorer
+npm start
+
+You can access the block explorer on the IP of your server on port 3001.
+
+E.G. http://198.51.100.1:3001
 
 ### License
 
