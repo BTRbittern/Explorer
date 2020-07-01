@@ -5,15 +5,15 @@
 */
 {
   // name your instance!
-  "title": "IQUIDUS",
+  "title": "BTR-Bittern",
 
   "address": "127.0.0.1:3001",
 
   // coin name
-  "coin": "Darkcoin",
+  "coin": "Bittern",
 
   // coin symbol
-  "symbol": "DRK",
+  "symbol": "BTR",
 
   // logo
   "logo": "/images/logo.png",
@@ -26,7 +26,7 @@
   //     Cerulean, Cosmo, Cyborg, Darkly, Flatly, Journal, Lumen, Paper,
   //     Readable, Sandstone, Simplex, Slate, Spacelab, Superhero, United, Yeti
   // theme (see /public/themes for available themes)
-  "theme": "Cyborg",
+  "theme": "Solar",
 
   // port to listen for requests on.
   "port" : 3001,
@@ -51,7 +51,7 @@
   "wallet": {
     "host": "localhost",
     "port": 9332,
-    "username": "darkcoinrpc",
+    "username": "bitternrpc",
     "password": "123gfjk3R3pCCVjHtbRde2s5kzdf233sa"
   },
 
@@ -63,7 +63,7 @@
 
   // menu settings
   "display": {
-    "api": true,
+    "api": false,
     "markets": true,
     "richlist": true,
     "twitter": true,
@@ -99,7 +99,7 @@
   //supported markets: bittrex, poloniex, yobit, empoex, bleutrade, cryptopia, ccex
   //default market is loaded by default and determines last price in header
   "markets": {
-    "coin": "JBS",
+    "coin": "BTR",
     "exchange": "BTC",
     "enabled": ["bittrex"],
     "cryptopia_id": "1658",
