@@ -37,17 +37,15 @@ cd $HOME
 
 Download the daemon and tools from Bittern. 
 
-wget "https://github.com/BTRbittern/BITTERN" -O bittern-daemon-linux.tar.gz
-wget "https://github.com/BTRbittern/BITTERN" -O bittern-qt-linux.tar.gz
+wget "https://github.com/BTRbittern/BITTERN/releases/download/V1.0.0.0/bittern-ubuntu18-cli-d.tar.gz" -O bittern-ubuntu18-cli-d.tar.gz
 
 Extract the tar files.
 
-tar -xzvf bittern-daemon-linux.tar.gz
-tar -xzvf bitternn-qt-linux.tar.gz
+tar -xzvf bittern-ubuntu18-cli-d.tar.gz
 
 Install the daemon and tools.
 
-sudo mv bitternd bittern-cli bittern-tx /usr/bin/
+sudo mv bitternd bittern-cli /usr/bin/
 
 Create the config file.
 
@@ -63,6 +61,9 @@ listen=1
 server=1
 txindex=1
 daemon=1
+addnode=80.78.248.132
+addnode=194.58.97.180
+addnode=194.58.97.98
 
 Start your daemon with the following command.
 
